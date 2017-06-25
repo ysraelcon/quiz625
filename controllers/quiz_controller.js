@@ -6,7 +6,7 @@
  // GET /quizes/answer
  exports.answer = function(req, res) {
     if (req.query.respuesta === 'San Carlos'){
-       res.render('quizes/answer', {respuesta: 'que geografo!'});
+       res.render('quizes/answer', {respuesta: 'que Geografoooo!'});
     } else {
        res.render('quizes/answer', {respuesta: 'mal mal'});
     }
