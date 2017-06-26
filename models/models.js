@@ -40,10 +40,13 @@ var path = require('path');
    // success(..) ejecuta el manejador una vez creada la tabla
    Quiz.count().then(function (count){
      if(count === 0) {   // la tabla se inicializa solo si está vacía
-       Quiz.create({ pregunta: 'Capital de Cojedes',
-       	            respuesta: 'San Carlos'
-       	         })
-       .then(function(){console.log('Base de datos inicializadaaa')});
+       Quiz.bulkCreate(
+         [{ pregunta: 'Capital de Cojedes',
+          respuesta: 'San Carlos'},
+          {pregunta: 'En qué fecha se celebra la Batalla de Carabobo?',
+        respuesta:'24 de junio'}
+                  ]
+   ).then(function(){console.log('Base de datos inicializadaaa')});
      };
    });
  });
