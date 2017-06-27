@@ -58,17 +58,19 @@ exports.answer = function(req, res) {
  exports.create = function(req, res) {
    var quiz = models.Quiz.build( req.body.quiz );
  
- quiz
-   .validate()
+ /*quiz
+   .validate()//no es sincronico, y deja promesa, y en then, entonces toma indefinido
    .then(
-     function(err){
-       if (err) {
-         res.render('quizes/new', {quiz: quiz, errors: err.errors});
+     function(err){*/
+var vali=quiz.pregunta!==""
+&&quiz.respuesta!=="";
+       if (!vali) {
+         res.render('quizes/new', {quiz: quiz, errors: "rellene los campos vacios"});
        } else {
          quiz // save: guarda en DB campos pregunta y respuesta de quiz
          .save({fields: ["pregunta", "respuesta"]})
          .then( function(){ res.redirect('/quizes')}) 
        }      // res.redirect: Redirección HTTP a lista de preguntas
      }
-   );
- };
+   /*).catch(function(err){console.log(quiz.pregunta)});
+ };*/
