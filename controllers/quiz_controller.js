@@ -1,4 +1,5 @@
 var models = require('../models/models.js');
+var Sequelize=require('sequelize');
 
 // Autoload - factoriza el código si ruta incluye :quizId
  exports.load = function(req, res, next, quizId) {
@@ -59,16 +60,10 @@ exports.answer = function(req, res) {
    var quiz = models.Quiz.build( req.body.quiz );
  
  quiz
-   .validate()
+   .save({fields: ["pregunta", "respuesta"]})
    .then(
-     function(err){
-       if (err) {
-         res.render('quizes/new', {quiz: quiz, errors: err.errors});
-       } else {
-         quiz // save: guarda en DB campos pregunta y respuesta de quiz
-         .save({fields: ["pregunta", "respuesta"]})
-         .then( function(){ res.redirect('/quizes')}) 
-       }      // res.redirect: Redirección HTTP a lista de preguntas
-     }
-   );
+      function(){ res.redirect('/quizes')}
+   ).catch(Sequelize.ValidationError, function (err) {
+    res.render('quizes/new', {quiz: quiz, errors: err.errors});
+   });
  };
