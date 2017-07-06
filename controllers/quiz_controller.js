@@ -1,4 +1,5 @@
 var models = require('../models/models.js');
+var Sequelize=require('sequelize');
 
 // Autoload - factoriza el código si ruta incluye :quizId
  exports.load = function(req, res, next, quizId) {
@@ -60,18 +61,13 @@ exports.answer = function(req, res) {
  
  
  quiz
-   .validate()
+   .save({fields: ["pregunta", "respuesta"]})
    .then(
-     function(err){
-       if (err) {
-         res.render('quizes/new', {quiz: quiz, errors: err.errors});
-       } else {
-         quiz // save: guarda en DB campos pregunta y respuesta de quiz
-         .save({fields: ["pregunta", "respuesta"]})
-         .then( function(){ res.redirect('/quizes')}) 
-       }      // res.redirect: Redirección HTTP a lista de preguntas
-     }
-   ).catch(function(error){next(error)});
+      function(){ res.redirect('/quizes')}
+   ).catch(Sequelize.ValidationError, function (err) {
+    res.render('quizes/new', {quiz: quiz, errors: err.errors});
+   })
+   .catch(function(error){next(error)});
  };
 
 // GET /quizes/:id/edit
@@ -87,19 +83,13 @@ exports.answer = function(req, res) {
    req.quiz.respuesta = req.body.quiz.respuesta;
  
    req.quiz
-   .validate()
-   .then(
-     function(err){
-       if (err) {
-         res.render('quizes/edit', {quiz: req.quiz, errors: err.errors});
-       } else {
-         req.quiz     // save: guarda campos pregunta y respuesta en DB
-         .save( {fields: ["pregunta", "respuesta"]})
-         .then( function(){ res.redirect('/quizes');});
-       }     // Redirección HTTP a lista de preguntas (URL relativo)
-     }
-   ).catch(function(error){next(error)});
- };
+   .save( {fields: ["pregunta", "respuesta"]})
+   .then( function(){ res.redirect('/quizes');})
+    .catch(Sequelize.ValidationError, function (err) {
+        res.render('quizes/edit', {quiz: req.quiz, errors: err.errors});
+      }).catch(function(error){next(error)});
+   
+ };//update
 
  // DELETE /quizes/:id
  exports.destroy = function(req, res) {
